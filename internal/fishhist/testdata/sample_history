@@ -1,0 +1,42 @@
+- cmd: git status
+  when: 1556856289
+- cmd: sudo pacman -S vim emacs fish
+  when: 1556856289
+  added_when: 1556856000
+- cmd: ls R/
+  when: 1557027342
+  paths:
+    - R/
+- cmd: chmod +x a.sh b.sh
+  when: 1557027482
+  added_when: 1556999999
+  paths:
+    - a.sh
+    - b.sh
+- cmd: grep \\d access.log
+  when: 1600000000
+- cmd: for i in 1 2 3\necho $i\nend
+  when: 1600000001
+- cmd: echo "quotes: colons - and dashes"
+  when: 1600000002
+- cmd: echo café 日本語
+  when: 1600000003
+- cmd: git reset --hard HEAD^
+  when: 1786216282
+  added_when: 1785451099
+- cmd: git push -f
+  when: 1786216284
+  added_when: 1785562293
+- cmd: git restore web/vite.config.ts
+  when: 1786217000
+  paths:
+    - web/vite.config.ts
+- cmd: make backend
+  when: 1786193460
+  added_when: 1786164389
+  paths:
+    - backend
+- cmd: curl -sL https://example.com/x.json \\\n  -H 'Accept: application/json'
+  when: 1786400000
+- cmd: last-entry
+  when: 1786911142

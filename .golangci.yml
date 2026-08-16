@@ -1,0 +1,67 @@
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  default: standard
+  enable:
+    - bodyclose
+    - copyloopvar
+    - errorlint
+    - gocritic
+    - misspell
+    - nilerr
+    - predeclared
+    - revive
+    - gosec
+    - unconvert
+    - unparam
+    - usestdlibvars
+    - wastedassign
+
+  settings:
+    revive:
+      rules:
+        - name: exported
+        - name: indent-error-flow
+        - name: var-naming
+        - name: error-strings
+        - name: context-as-argument
+        - name: unreachable-code
+
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - style
+        - performance
+      disabled-checks:
+        # The codebase deliberately uses explicit if/else over switch in a few
+        # small numeric helpers where switch reads worse.
+        - ifElseChain
+        # Bubble Tea is built on value receivers: Update returns a new model by
+        # value, and every component follows suit. Passing these by pointer
+        # would fight the framework rather than the other way round.
+        - hugeParam
+
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - std-error-handling
+    rules:
+      # Tests exercise error paths and fixtures directly; the security and
+      # duplication linters produce only noise there.
+      - path: _test\.go$
+        linters:
+          - gosec
+          - unparam
+
+formatters:
+  enable:
+    - gofumpt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/farrellm/yanagiba
