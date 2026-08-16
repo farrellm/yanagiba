@@ -35,6 +35,20 @@ install: ## Install the binary into $(INSTALL_DIR)
 uninstall: ## Remove the installed binary
 	rm -f $(INSTALL_DIR)/$(BINARY)
 
+# Autoloading requires the file to be named after the function it defines.
+FISH_FUNCTION_DIR ?= $(HOME)/.config/fish/functions
+
+.PHONY: install-fish-function
+install-fish-function: ## Install the fish wrapper that reloads history after editing
+	mkdir -p $(FISH_FUNCTION_DIR)
+	cp contrib/$(BINARY).fish $(FISH_FUNCTION_DIR)/$(BINARY).fish
+	@echo "installed $(FISH_FUNCTION_DIR)/$(BINARY).fish"
+	@echo "start a new fish shell, or run: source $(FISH_FUNCTION_DIR)/$(BINARY).fish"
+
+.PHONY: uninstall-fish-function
+uninstall-fish-function: ## Remove the fish wrapper
+	rm -f $(FISH_FUNCTION_DIR)/$(BINARY).fish
+
 .PHONY: run
 run: ## Run against ARGS, e.g. make run ARGS="--file testdata/sample_history"
 	go run -ldflags '$(LDFLAGS)' $(PKG) $(ARGS)
@@ -76,8 +90,16 @@ tidy-check: ## Fail if go.mod or go.sum are not tidy
 	go mod tidy
 	git diff --exit-code go.mod go.sum
 
+.PHONY: check-fish
+check-fish: ## Syntax-check the shipped fish function (skipped if fish is absent)
+	@if command -v fish >/dev/null 2>&1; then \
+		fish --no-execute contrib/$(BINARY).fish && echo "contrib/$(BINARY).fish: ok"; \
+	else \
+		echo "fish not installed, skipping"; \
+	fi
+
 .PHONY: check
-check: fmt-check vet lint test ## Everything CI runs
+check: fmt-check vet lint check-fish test ## Everything CI runs
 
 .PHONY: check-history
 check-history: ## Verify the codec round-trips your real history, read-only

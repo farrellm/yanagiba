@@ -51,6 +51,14 @@ jobs:
       - name: Vet
         run: make vet
 
+      # The shipped fish function is code we distribute; a syntax error in it
+      # would only surface on a user's machine.
+      - name: Install fish
+        run: sudo apt-get update && sudo apt-get install -y fish
+
+      - name: Check the fish function
+        run: make check-fish
+
       # The action supplies its own pinned binary, so it runs the linter
       # directly rather than through `make lint`.
       - uses: golangci/golangci-lint-action@v9

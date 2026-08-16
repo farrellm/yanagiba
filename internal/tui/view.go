@@ -238,9 +238,10 @@ func (m Model) renderOverlay() string {
 		return m.styles.Dialog.Render(
 			m.styles.Title.Render("Write "+entryCount(m.store.len())+" to disk?") +
 				"\n" + m.styles.DetailLabel.Render(shortenPath(m.path, m.dialogInnerWidth())) +
-				"\n\n" + m.styles.Warning.Render("Running fish shells keep history in memory and will") +
-				"\n" + m.styles.Warning.Render("overwrite this on exit. Close them first, or run") +
-				"\n" + m.styles.Warning.Render("`history merge` in each afterwards.") +
+				"\n\n" + m.styles.Warning.Render("Anything typed in a fish session since this file was") +
+				"\n" + m.styles.Warning.Render("loaded is not in this snapshot and will be lost.") +
+				"\n\n" + m.styles.Dim.Render("Other sessions pick these edits up on their own;") +
+				"\n" + m.styles.Dim.Render("`history merge` makes it immediate.") +
 				"\n\n" + m.styles.Dim.Render("A timestamped backup is written alongside the file.") +
 				"\n\n" + m.styles.DetailValue.Render("y  write") +
 				"    " + m.styles.Dim.Render("any other key  cancel"))
