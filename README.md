@@ -26,11 +26,13 @@ memory until you explicitly write them, and a timestamped backup taken when you 
 ## Install
 
 ```sh
-make install
+make install                  # the binary
+make install-fish-function    # optional wrapper that reloads history after editing
 ```
 
-Installs into `go env GOBIN` (or `$(go env GOPATH)/bin`). Override with
-`make install INSTALL_DIR=~/bin`.
+`make install` installs into `go env GOBIN` (or `$(go env GOPATH)/bin`); override
+with `make install INSTALL_DIR=~/bin`. The wrapper is described under
+[Safety](#safety) — it is worth having.
 
 ## Use
 
@@ -79,9 +81,30 @@ Editing a decade of shell history deserves some care, so:
   with a history you care about.
 
 > [!IMPORTANT]
-> Running fish shells keep history in memory and rewrite the file on exit, which
-> will clobber a save made underneath them. Close other fish sessions first, or
-> run `history merge` in each one afterwards.
+> yanagiba reads the whole history on start and writes a whole new one on save.
+> **Commands typed in any fish session while it is open are not in that snapshot
+> and are lost when you save.** Don't leave it open in the background.
+>
+> Measured against fish 4.8.1, the reverse worry is unfounded: a session picks up
+> external edits on its own, and exiting does *not* resurrect deleted entries.
+
+### The fish wrapper
+
+```sh
+make install-fish-function
+```
+
+Installs [`contrib/yanagiba.fish`](contrib/yanagiba.fish) into
+`~/.config/fish/functions/`, wrapping the binary so the calling shell stays in
+step:
+
+- `history save` **before** — flushes commands this session has run but not yet
+  written, so they are in the snapshot yanagiba reads and survive the save.
+- `history merge` **after** — re-reads the file so the session reflects the edits
+  immediately rather than eventually.
+
+The wrapper passes arguments straight through and preserves the exit status.
+It cannot help with commands typed in *other* sessions while the editor is open.
 
 ## About the file format
 
